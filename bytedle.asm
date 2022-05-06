@@ -5,7 +5,7 @@ STACK 256
 
 
 DATASEG
-	include "utils/dataseg.asm"
+	include "utils/bytedleDataseg.asm"
 	
 CODESEG
     ORG 100h
@@ -28,8 +28,8 @@ EXIT:
 ;---------------------------
 ; Procudures area
 ;---------------------------
-include "utils/screenUtils.asm"
-include "utils/ShowBmp.asm"
+include "utils/bytedleDcreenUtils.asm"
+include "utils/bytedleShowBmp.asm"
 
 
 proc mainLoop
