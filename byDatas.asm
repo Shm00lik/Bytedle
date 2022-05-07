@@ -30,7 +30,7 @@ BmpColSize dw ?
 BmpRowSize dw ?
 
 
-MENU_IMAGE db "images/menu.bmp", 0
+MENU_IMAGE db "bytedleImages/menu.bmp", 0
 
 
 correctWord db "homer"
