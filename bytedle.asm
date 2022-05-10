@@ -5,19 +5,22 @@ STACK 256
 
 
 DATASEG
-	include "byDatas.asm"
+	include "byUtils/byDatas.asm"
 	
 CODESEG
     ORG 100h
 start:
 	mov ax, @data
-	mov ds,ax
-	mov es,ax
-
+	mov ds, ax
+	mov es, ax
 	
+	push "a"
+	push "g"
+	push 1
+	push 1
+	call displayLetterByColor
 	; call showMenuImage
-	
-	call mainLoop
+	; call mainLoop
 
 EXIT:
     
@@ -28,8 +31,8 @@ EXIT:
 ;---------------------------
 ; Procudures area
 ;---------------------------
-include "byScUtls.asm"
-include "byShwBmp.asm"
+include "byUtils/byScUtls.asm"
+include "byUtils/byShwBmp.asm"
 
 
 proc mainLoop
@@ -37,8 +40,8 @@ proc mainLoop
 	mov cx, 5
 
 	@@loop:
-		call getUserGuess
-		call checkColors
+		; call clearScreen
+		call getNewWord
 		call checkWin
 
 		cmp [isWin], 1
@@ -55,6 +58,20 @@ proc mainLoop
 
 endp mainLoop
 
+;========================================================
+;========================================================
+;========================================================
+
+proc getNewWord
+	call getUserGuess
+	call checkColors
+	call saveGuessToHistory
+	inc [wordIndex]
+endp getNewWord
+
+;========================================================
+;========================================================
+;========================================================
 
 proc getUserGuess
 	push ax
@@ -90,6 +107,9 @@ proc getUserGuess
 	ret
 endp getUserGuess
 
+;========================================================
+;========================================================
+;========================================================
 
 proc checkColors
 	push ax
@@ -170,6 +190,91 @@ proc checkColors
 	ret
 endp checkColors
 
+;========================================================
+;========================================================
+;========================================================
+
+proc saveGuessToHistory
+	push ax
+	push bx
+	push cx
+	
+	cmp [wordIndex], 1
+	je @@set1Word
+	
+	cmp [wordIndex], 2
+	je @@set2Word
+	
+	cmp [wordIndex], 3
+	je @@set3Word
+	
+	cmp [wordIndex], 4
+	je @@set4Word
+	
+	cmp [wordIndex], 5
+	je @@set5Word
+	
+	cmp [wordIndex], 6
+	je @@set6Word
+	
+	@@set1Word:
+		mov bx, offset wordHistory1
+		jmp @@continue
+	
+	@@set2Word:
+		mov bx, offset wordHistory2
+		jmp @@continue
+		
+	@@set3Word:
+		mov bx, offset wordHistory3
+		jmp @@continue
+		
+	@@set4Word:
+		mov bx, offset wordHistory4
+		jmp @@continue
+		
+	@@set5Word:
+		mov bx, offset wordHistory5
+		jmp @@continue
+		
+	@@set6Word:
+		mov bx, offset wordHistory6
+		jmp @@continue
+	
+	@@continue:
+	
+	mov si, offset userGuess
+	
+	mov cx, 5
+	
+	@@loopWord:
+		mov al, [si]
+		mov [bx], al
+		inc bx
+		inc si
+	loop @@loopWord
+	
+	
+	mov si, offset colors
+	
+	mov cx, 5
+	
+	@@loopColor:
+		mov al, [si]
+		mov [bx], al
+		inc bx
+		inc si
+	loop @@loopColor
+	
+	
+	pop cx
+	pop bx
+	pop ax
+endp saveGuessToHistory
+
+;========================================================
+;========================================================
+;========================================================
 
 proc checkWin
 	push ax
@@ -203,6 +308,9 @@ proc checkWin
 		ret
 endp checkWin
 
+;========================================================
+;========================================================
+;========================================================
 
 proc showMenuImage
 	push dx
@@ -212,7 +320,7 @@ proc showMenuImage
 	mov [BmpLeft], 0
 	mov [BmpTop], 0
 	mov [BmpColSize], 320
-	mov [BmpRowSize] ,200
+	mov [BmpRowSize], 200
 	
 	call OpenShowBmp
 	pop dx
@@ -221,8 +329,6 @@ proc showMenuImage
 endp showMenuImage
 
 END start
-
-
 
 
 
