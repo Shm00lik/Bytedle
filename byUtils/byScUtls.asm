@@ -1,4 +1,5 @@
 proc clearScreen
+	call SetText
 	push ax
 	push cx
 
@@ -19,6 +20,7 @@ proc clearScreen
 	ret
 endp clearScreen
 
+
 ; STACK:
 ; letter
 ; color
@@ -30,17 +32,51 @@ proc displayLetterByColor
 	push bp
 	mov bp, sp
 	
-	LETTER_INDEX 1 ;equ [bp + 4]
-	WORD_INDEX 	  1 ;equ [bp + 6]
-	LETTER_COLOR "g" ; equ [bp + 8]
-	LETTER 		 "a"; equ [bp + 10]
+	LETTER 		 equ  [bp + 10]
+	LETTER_COLOR equ  [bp + 8]
+	WORD_INDEX 	 equ  [bp + 6]
+	LETTER_INDEX equ  [bp + 4]
 
+	push ax
+	push bx
 	
-	push dx
-	call SetGraphic
- 
+	mov bx, offset CURRENT_LETTER_PATH
+	
+	add bx, 9
+	mov ax, LETTER
+	mov [bx], al
+
+	add bx, 2
+	mov ax, LETTER_COLOR
+	mov [bx], al
+
+	push WORD_INDEX
+	push LETTER_INDEX
+	call displayLetter
+
+	pop bx
+	pop ax
+	
+	pop bp
+	ret 8
+endp displayLetterByColor
+
+
+; STACK
+; word index
+; letter index
+; ^^^^^^^^^^^^^
+; SP is now here
+proc displayLetter
+	push bp
+	mov bp, sp
+	
+	WORD_INDEX 	 equ  [bp + 6]
+	LETTER_INDEX equ  [bp + 4]
+
+	push dx 
 	mov dx, offset CURRENT_LETTER_PATH
-			
+	
 	push ax
 	push cx
 	
@@ -50,7 +86,8 @@ proc displayLetterByColor
 	@@XLoop:
 		add ax, LETTERS_DIFF_X
 	loop @@XLoop
-	
+	sub ax, LETTERS_DIFF_X ; cuz first letter actualy starts at 0, but cx can't be 0 when looping
+
 	mov [BmpLeft], ax
 	
 	
@@ -60,6 +97,7 @@ proc displayLetterByColor
 	@@YLoop:
 		add ax, LETTERS_DIFF_Y
 	loop @@YLoop
+	sub ax, LETTERS_DIFF_Y ; same like above
 	
 	mov [BmpTop], ax
 	
@@ -75,10 +113,57 @@ proc displayLetterByColor
 	pop dx
 
 	
+	pop bp
+	ret 4
+endp displayLetter
+
+
+; STACK
+; delay between letters
+; word offset
+; word index
+; ^^^^^^^^^^^^^
+; SP is now here
+proc displayWord
+	push bp
+	mov bp, sp
+	
+	DELAY        equ [bp + 8]
+	WORD_OFFSET  equ [bp + 6]
+	WORD_INDEX   equ [bp + 4]
+	
+	push ax
+	push bx
+	push cx
+
+	mov cx, 5
+
+	@@loop:
+		mov bx, WORD_OFFSET
+		add bx, cx
+		sub bx, 1
+
+		mov ax, [bx]
+
+		push ax
+
+		add bx, 5
+		mov ax, [bx]
+
+		push ax
+	
+		push WORD_INDEX
+		push cx
+		call displayLetterByColor
+
+		push DELAY
+		call sleep_ms
+	loop @@loop
+
+	pop cx
+	pop bx
+	pop ax
 	
 	pop bp
-	ret 8 
-	
-endp displayLetterByColor
-
-
+	ret 6
+endp displayWord

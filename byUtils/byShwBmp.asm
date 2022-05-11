@@ -7,7 +7,7 @@
 proc OpenShowBmp near
 	push ax
 	push dx
-	 
+	
 	call OpenBmpFile
 	cmp [ErrorFile],1
 	je @@ExitProc
@@ -144,7 +144,17 @@ proc  SetGraphic
 endp 	SetGraphic
 
  
+   
+proc  SetText
+	push ax
 
+	mov ax, 0h   ; 320 X 200 
+				 ;Mode 13h is an IBM VGA BIOS mode. It is the specific standard 256-color mode 
+	int 10h
+	pop ax
+
+	ret
+endp 	SetText
  
  
  

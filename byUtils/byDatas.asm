@@ -32,26 +32,30 @@ BmpRowSize dw ?
 
 
 MENU_IMAGE db "byImages/byMenu.bmp", 0
-CURRENT_LETTER_PATH db "byImages/letter.bmp"
+CURRENT_LETTER_PATH db "byImages/___.bmp"
 
 
 
-FIRST_WORD_Y      equ 4
-FIRST_LETTER_X    equ 67
-LETTERS_DIFF_X    equ 38
-LETTERS_DIFF_Y 	  equ 39
-LETTER_IMAGE_SIZE equ 32
+
+FIRST_WORD_Y            equ 4
+FIRST_LETTER_X          equ 67
+LETTERS_DIFF_X          equ 38
+LETTERS_DIFF_Y 	        equ 39
+LETTER_IMAGE_SIZE       equ 32
+DELAY_BETWEEN_LETTERS   equ 300
 
 
-correctWord db "ocean"
-userGuess db "     "
-colors db "wwwww"
-letterFound db 0
-isWin db 0
-wordIndex db 1
-wordHistory1 db "     wwwww"
-wordHistory2 db "     wwwww"
-wordHistory3 db "     wwwww"
-wordHistory4 db "     wwwww"
-wordHistory5 db "     wwwww"
-wordHistory6 db "     wwwww"
+
+
+correctWord   db "cabab"
+userGuess     db "     "
+colors        db "     "
+letterFound   db 0
+isWin         db 0
+wordIndex     db 1
+defaultWord   db "__________"
+wordHistory1  db "     wwwww"
+wordHistory2  db "     wwwww"
+wordHistory3  db "     wwwww"
+wordHistory4  db "     wwwww"
+wordHistory5  db "     wwwww"

@@ -13,13 +13,21 @@ start:
 	mov ax, @data
 	mov ds, ax
 	mov es, ax
+	call SetGraphic
+
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+	;; IF PROGRAM IS BROKEN, MAKE SURE TO CALL SetGraphic!! ;;
+	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
-	push "a"
-	push "g"
-	push 1
-	push 1
-	call displayLetterByColor
-	; call showMenuImage
+	; push offset wordHistory1
+	; push 1
+	; call displayWord
+	call basicScreenSetup
+
+	mov cx, 5
+	@@loop:
+		call getNewWord
+	loop @@loop
 	; call mainLoop
 
 EXIT:
@@ -33,21 +41,31 @@ EXIT:
 ;---------------------------
 include "byUtils/byScUtls.asm"
 include "byUtils/byShwBmp.asm"
-
+include "byUtils/byUtils.asm"
 
 proc mainLoop
 	mov ax, offset correctWord
 	mov cx, 5
 
 	@@loop:
+	
 		; call clearScreen
-		call getNewWord
-		call checkWin
+		
+		
 
-		cmp [isWin], 1
-		je @@win
+		;call showMenuImage
 
-	jmp @@loop
+		
+
+		
+		; call clearScreen
+		; call getNewWord
+		; call checkWin
+
+		; cmp [isWin], 1
+		; je @@win
+
+	;loop @@loop
 
 	@@win:
 		mov ax, 3339h
@@ -66,7 +84,9 @@ proc getNewWord
 	call getUserGuess
 	call checkColors
 	call saveGuessToHistory
+	call displayNewGuess
 	inc [wordIndex]
+	ret
 endp getNewWord
 
 ;========================================================
@@ -77,9 +97,11 @@ proc getUserGuess
 	push ax
 	push bx
 	push cx
+	push dx
 
-	mov cx, 5
+	mov cx, 6
 	mov bx, offset userGuess
+	mov dx, 1
 
 	@@getLetter:
 		xor ax, ax
@@ -88,18 +110,72 @@ proc getUserGuess
 		int 21h
 
 		; SOMETIMES SETS AL TO 41???
-		
+		cmp al, 8h
+		je @@backspace
+
+		cmp al, 0dh
+		je @@enter
+
+		cmp cx, 1
+		je @@getLetter
+
 		cmp al, "a"
 		jl @@getLetter
 
 		cmp al, "z"
 		jg @@getLetter
 
+		jmp @@continue
+
+		@@backspace:
+			cmp cx, 6
+			je @@getLetter ; for prevent backspace on first letter
+
+			mov ax, "_"
+			push ax
+
+			push "_"
+
+			xor ax, ax
+			mov al, [wordIndex]
+			push ax
+
+			dec dx
+			push dx
+
+			call displayLetterByColor
+
+			inc cx
+			dec bx
+			jmp @@getLetter
+
+		@@enter:
+			cmp cx, 1
+			jne @@getLetter
+
+			jmp @@end
+
+		@@continue:
 		mov [bx], al
 
-		inc bx
-	 loop @@getLetter
+		mov ah, 0
+		push ax
 
+		push "w"
+
+		xor ax, ax
+		mov al, [wordIndex]
+		push ax
+
+		push dx
+		call displayLetterByColor
+
+		inc bx
+		inc dx
+	loop @@getLetter
+
+	@@end:
+	pop dx
 	pop cx
 	pop bx
 	pop ax
@@ -198,7 +274,8 @@ proc saveGuessToHistory
 	push ax
 	push bx
 	push cx
-	
+	push si
+
 	cmp [wordIndex], 1
 	je @@set1Word
 	
@@ -213,9 +290,7 @@ proc saveGuessToHistory
 	
 	cmp [wordIndex], 5
 	je @@set5Word
-	
-	cmp [wordIndex], 6
-	je @@set6Word
+
 	
 	@@set1Word:
 		mov bx, offset wordHistory1
@@ -236,11 +311,8 @@ proc saveGuessToHistory
 	@@set5Word:
 		mov bx, offset wordHistory5
 		jmp @@continue
-		
-	@@set6Word:
-		mov bx, offset wordHistory6
-		jmp @@continue
-	
+
+
 	@@continue:
 	
 	mov si, offset userGuess
@@ -266,11 +338,98 @@ proc saveGuessToHistory
 		inc si
 	loop @@loopColor
 	
-	
+	pop si
 	pop cx
 	pop bx
 	pop ax
+	ret
 endp saveGuessToHistory
+
+;========================================================
+;========================================================
+;========================================================
+
+proc displayNewGuess
+	push bx
+	call setBXToCurrentWordOffset
+
+	push DELAY_BETWEEN_LETTERS
+	push bx
+
+	xor bx, bx
+	mov bl, [offset wordIndex]
+	push bx
+	call displayWord
+
+	pop bx
+
+	ret
+endp displayNewGuess
+
+;========================================================
+;========================================================
+;========================================================
+
+proc setBXToCurrentWordOffset
+	cmp [wordIndex], 1
+	je @@set1Word
+	
+	cmp [wordIndex], 2
+	je @@set2Word
+	
+	cmp [wordIndex], 3
+	je @@set3Word
+	
+	cmp [wordIndex], 4
+	je @@set4Word
+	
+	cmp [wordIndex], 5
+	je @@set5Word
+
+	
+	@@set1Word:
+		mov bx, offset wordHistory1
+		jmp @@end
+	
+	@@set2Word:
+		mov bx, offset wordHistory2
+		jmp @@end
+		
+	@@set3Word:
+		mov bx, offset wordHistory3
+		jmp @@end
+		
+	@@set4Word:
+		mov bx, offset wordHistory4
+		jmp @@end
+		
+	@@set5Word:
+		mov bx, offset wordHistory5
+		jmp @@end
+
+	@@end:
+	ret
+endp setBXToCurrentWordOffset
+
+;========================================================
+;========================================================
+;========================================================
+
+proc basicScreenSetup
+	push cx
+
+	mov cx, 5
+	@@loop:
+		push 0
+		push offset defaultWord
+		push cx
+		call displayWord
+	loop @@loop
+
+	pop cx
+
+	ret
+endp basicScreenSetup
 
 ;========================================================
 ;========================================================
@@ -314,19 +473,19 @@ endp checkWin
 
 proc showMenuImage
 	push dx
-	call SetGraphic
  
 	mov dx, offset MENU_IMAGE
 	mov [BmpLeft], 0
 	mov [BmpTop], 0
 	mov [BmpColSize], 320
-	mov [BmpRowSize], 200
+	mov [BmpRowSize], 240
 	
 	call OpenShowBmp
 	pop dx
 	
-	ret
+	ret 2
 endp showMenuImage
+
 
 END start
 
