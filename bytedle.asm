@@ -18,20 +18,12 @@ start:
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; IF PROGRAM IS BROKEN, MAKE SURE TO CALL SetGraphic!! ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	
-	; push offset wordHistory1
-	; push 1
-	; call displayWord
-	; call basicScreenSetup
-	call setupGameScreen
-
-	call generateRandomWord
 
 	; mov cx, 5
 	; @@loop:
 	; 	call getNewWord
 	; loop @@loop
-
+	
 	call mainLoop
 
 EXIT:
@@ -51,38 +43,10 @@ include "byUtils/byPages.asm"
 
 proc mainLoop
 	@@loop:
-		cmp [currentScreen], 0
-		je @@menuScreen
-
-		cmp [currentScreen], 1
-		je @@menuScreen
-
-		cmp [currentScreen], 2
-		je @@loseScreen
-
-		cmp [currentScreen], 3
-		je @@winScreen
-
-		@@menuScreen:
-		call menuScreen
-		jmp @@loop
-
-		@@gameScreen:
-		call gameScreen
-		jmp @@loop
-
-		@@loseScreen:
-		call loseScreen
-		jmp @@loop
-
-		@@winScreen:
-		call winScreen
-		jmp @@loop
-
-
+		cmp [stopScreen], 0
+		jne @@loop
+		call displayCurrentScreen
 	jmp @@loop
-
-	
 
 	@@end:
 	ret
@@ -94,21 +58,50 @@ endp mainLoop
 ;========================================================
 ;========================================================
 
+proc playGame
+	push cx
+
+	mov cx, 5
+	@@loop:
+		call getNewWord
+
+		call checkWin
+
+		cmp [isWin], 1
+		je @@win
+
+		cmp [wordIndex], 6
+		jne @@continueLoop
+
+		mov [currentScreen], 3
+		push 5000
+		call sleep_ms
+		jmp @@continueLoop
+
+		@@win:
+		mov [currentScreen], 1
+		mov [wordIndex], 1
+		jmp @@end
+
+		@@continueLoop:
+	loop @@loop
+
+	@@end:
+	pop cx
+	ret
+endp playGame
+
+;========================================================
+;========================================================
+;========================================================
+
 proc getNewWord
 	call getUserGuess
 	call checkColors
 	call saveGuessToHistory
 	call displayNewGuess
+	
 	inc [wordIndex]
-
-	call checkWin
-
-	cmp [isWin], 1
-	je @@win
-	jmp @@end
-
-	@@win:
-	mov [currentScreen], 3
 
 	@@end:
 	ret
@@ -498,7 +491,9 @@ endp checkWin
 
 
 proc setupGameScreen
+	call clearScreen
 	call basicScreenSetup
+	call generateRandomWord
 	mov [currentScreen], 1
 	ret
 endp setupGameScreen
@@ -507,20 +502,6 @@ endp setupGameScreen
 ;========================================================
 ;========================================================
 
-proc showMenuImage
-	push dx
- 
-	mov dx, offset MENU_IMAGE
-	mov [BmpLeft], 0
-	mov [BmpTop], 0
-	mov [BmpColSize], 320
-	mov [BmpRowSize], 240
-	
-	call OpenShowBmp
-	pop dx
-	
-	ret 2
-endp showMenuImage
 
 
 END start

@@ -30,12 +30,12 @@ BmpColSize dw ?
 BmpRowSize dw ?
 
 
+BACKGROUND_IMAGE_PATH  db "byImages/byBack.bmp"        , 0
+MENU_IMAGE             db "byImages/byMenu.bmp"        , 0
 
-MENU_IMAGE          db "byImages/byMenu.bmp"        , 0
-
-CURRENT_LETTER_PATH db "byImages/___.bmp"           , 0
-RAND_WORD_PATH      db "byUtils/byRaWord/byWord.txt", 0
-RAND_WORD_FLAG_PATH db "byUtils/byRaWord/byFlag.txt", 0
+CURRENT_LETTER_PATH    db "byImages/letters/___.bmp"   , 0
+RAND_WORD_PATH         db "byUtils/byRaWord/byWord.txt", 0
+RAND_WORD_FLAG_PATH    db "byUtils/byRaWord/byFlag.txt", 0
 
 
 
@@ -66,4 +66,5 @@ wordHistory3  db "     wwwww"
 wordHistory4  db "     wwwww"
 wordHistory5  db "     wwwww"
 
-currentScreen db 0
+currentScreen db 1
+stopScreen    db 0

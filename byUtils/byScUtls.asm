@@ -1,22 +1,18 @@
+
 proc clearScreen
-	call SetText
-	push ax
-	push cx
+	call SetGraphic
 
-	mov ax, 0B800h
-	mov es, ax
-	mov cx, 4000
-
-	@@clear:
-		; clears the screen
-		mov di, cx
-		mov ah, 0b
-		mov al, ''
-		mov [es:di], ax
-		loop @@clear
+	push dx
+ 
+	mov dx, offset BACKGROUND_IMAGE_PATH
+	mov [BmpLeft], 0
+	mov [BmpTop], 0
+	mov [BmpColSize], 320
+	mov [BmpRowSize], 240
 	
-	pop cx
-	pop ax
+	call OpenShowBmp
+	pop dx
+
 	ret
 endp clearScreen
 
@@ -42,7 +38,7 @@ proc displayLetterByColor
 	
 	mov bx, offset CURRENT_LETTER_PATH
 	
-	add bx, 9
+	add bx, 17
 	mov ax, LETTER
 	mov [bx], al
 
@@ -168,35 +164,40 @@ proc displayWord
 	ret 6
 endp displayWord
 
+;========================================================
+;========================================================
+;========================================================
 
-; STACK:
-; screen index
-; ^^^^^^^^^^^^^
-; SP is now here
-proc displayScreen
-	push bp
-	mov bp, sp
+proc displayCurrentScreen
+	cmp [currentScreen], 0
+	je @@menuScreen
 
-	SCREEN_INDEX equ [bp + 4]
+	cmp [currentScreen], 1
+	je @@gameScreen
 
-	cmp [SCREEN_INDEX], 0
-	je @@menu_screen
+	cmp [currentScreen], 2
+	je @@loseScreen
 
-	cmp [SCREEN_INDEX], 2
-	je @@lost_screen
+	cmp [currentScreen], 3
+	je @@winScreen
 
-	cmp [SCREEN_INDEX], 3
-	je @@win_screen
+	@@menuScreen:
+	call menuScreen
+	jmp @@end
 
-	@@menu_screen:
-	mov dx, 
-	
-	@@lost_screen:
+	@@gameScreen:
+	call gameScreen
+	jmp @@end
 
-	@@win_screen:
+	@@loseScreen:
+	call loseScreen
+	jmp @@end
 
-	@@continue:
+	@@winScreen:
+	call winScreen
+	jmp @@end
 
-	pop bp
-	ret 2
-endp displayScreen
+	@@end:
+	mov [stopScreen], 0
+	ret 
+endp displayCurrentScreen
