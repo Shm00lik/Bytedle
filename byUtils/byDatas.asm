@@ -31,9 +31,11 @@ BmpRowSize dw ?
 
 
 
-MENU_IMAGE db "byImages/byMenu.bmp", 0
-CURRENT_LETTER_PATH db "byImages/___.bmp"
+MENU_IMAGE          db "byImages/byMenu.bmp"        , 0
 
+CURRENT_LETTER_PATH db "byImages/___.bmp"           , 0
+RAND_WORD_PATH      db "byUtils/byRaWord/byWord.txt", 0
+RAND_WORD_FLAG_PATH db "byUtils/byRaWord/byFlag.txt", 0
 
 
 
@@ -44,10 +46,14 @@ LETTERS_DIFF_Y 	        equ 39
 LETTER_IMAGE_SIZE       equ 32
 DELAY_BETWEEN_LETTERS   equ 300
 
+MENU_SCREEN equ 0
+GAME_SCREEN equ 1
+LOSE_SCREEN equ 2
+WIN_SCREEN  equ 3
 
 
 
-correctWord   db "cabab"
+correctWord   db "aaaaa"
 userGuess     db "     "
 colors        db "     "
 letterFound   db 0
@@ -59,3 +65,5 @@ wordHistory2  db "     wwwww"
 wordHistory3  db "     wwwww"
 wordHistory4  db "     wwwww"
 wordHistory5  db "     wwwww"
+
+currentScreen db 0

@@ -22,56 +22,70 @@ start:
 	; push offset wordHistory1
 	; push 1
 	; call displayWord
-	call basicScreenSetup
+	; call basicScreenSetup
+	call setupGameScreen
 
-	mov cx, 5
-	@@loop:
-		call getNewWord
-	loop @@loop
-	; call mainLoop
+	call generateRandomWord
+
+	; mov cx, 5
+	; @@loop:
+	; 	call getNewWord
+	; loop @@loop
+
+	call mainLoop
 
 EXIT:
     
 	mov ax, 4C00h ; returns control to dos
   	int 21h
-  
-  
+
+
 ;---------------------------
 ; Procudures area
 ;---------------------------
 include "byUtils/byScUtls.asm"
 include "byUtils/byShwBmp.asm"
 include "byUtils/byUtils.asm"
+include "byUtils/byPages.asm"
+
 
 proc mainLoop
-	mov ax, offset correctWord
-	mov cx, 5
-
 	@@loop:
+		cmp [currentScreen], 0
+		je @@menuScreen
+
+		cmp [currentScreen], 1
+		je @@menuScreen
+
+		cmp [currentScreen], 2
+		je @@loseScreen
+
+		cmp [currentScreen], 3
+		je @@winScreen
+
+		@@menuScreen:
+		call menuScreen
+		jmp @@loop
+
+		@@gameScreen:
+		call gameScreen
+		jmp @@loop
+
+		@@loseScreen:
+		call loseScreen
+		jmp @@loop
+
+		@@winScreen:
+		call winScreen
+		jmp @@loop
+
+
+	jmp @@loop
+
 	
-		; call clearScreen
-		
-		
-
-		;call showMenuImage
-
-		
-
-		
-		; call clearScreen
-		; call getNewWord
-		; call checkWin
-
-		; cmp [isWin], 1
-		; je @@win
-
-	;loop @@loop
-
-	@@win:
-		mov ax, 3339h
 
 	@@end:
-		ret
+	ret
 
 
 endp mainLoop
@@ -86,6 +100,17 @@ proc getNewWord
 	call saveGuessToHistory
 	call displayNewGuess
 	inc [wordIndex]
+
+	call checkWin
+
+	cmp [isWin], 1
+	je @@win
+	jmp @@end
+
+	@@win:
+	mov [currentScreen], 3
+
+	@@end:
 	ret
 endp getNewWord
 
@@ -471,6 +496,17 @@ endp checkWin
 ;========================================================
 ;========================================================
 
+
+proc setupGameScreen
+	call basicScreenSetup
+	mov [currentScreen], 1
+	ret
+endp setupGameScreen
+
+;========================================================
+;========================================================
+;========================================================
+
 proc showMenuImage
 	push dx
  
@@ -494,8 +530,5 @@ END start
 
 ;-----------------------
 ; 		  TODO:
-; 1. adding graphics
-; 2. to actually check the program :( ---> DONE AT 5/5/22
-; 3. adding screens
-; 4. 
+; 1. adding screens
 ;-----------------------

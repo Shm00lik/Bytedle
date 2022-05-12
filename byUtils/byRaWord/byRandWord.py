@@ -3,7 +3,7 @@ import os
 
 flag_path = "./byUtils/byRaWord/byFlag.txt"
 answers_path = "./byUtils/byRaWord/byAnswers.txt"
-rand_word_path = "./byUtils/byRaWord/byWord.txt"
+rand_word_path = "./byUtils/byRaWord/BYFLAG.txt"
 words = []
 
 with open(answers_path) as f:

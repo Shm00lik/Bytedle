@@ -62,7 +62,7 @@ proc displayLetterByColor
 endp displayLetterByColor
 
 
-; STACK
+; STACK:
 ; word index
 ; letter index
 ; ^^^^^^^^^^^^^
@@ -118,7 +118,7 @@ proc displayLetter
 endp displayLetter
 
 
-; STACK
+; STACK:
 ; delay between letters
 ; word offset
 ; word index
@@ -167,3 +167,36 @@ proc displayWord
 	pop bp
 	ret 6
 endp displayWord
+
+
+; STACK:
+; screen index
+; ^^^^^^^^^^^^^
+; SP is now here
+proc displayScreen
+	push bp
+	mov bp, sp
+
+	SCREEN_INDEX equ [bp + 4]
+
+	cmp [SCREEN_INDEX], 0
+	je @@menu_screen
+
+	cmp [SCREEN_INDEX], 2
+	je @@lost_screen
+
+	cmp [SCREEN_INDEX], 3
+	je @@win_screen
+
+	@@menu_screen:
+	mov dx, 
+	
+	@@lost_screen:
+
+	@@win_screen:
+
+	@@continue:
+
+	pop bp
+	ret 2
+endp displayScreen
