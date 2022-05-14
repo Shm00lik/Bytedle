@@ -9,25 +9,24 @@ DATASEG
 	
 CODESEG
     ORG 100h
+	include "byUtils/byMacros.asm"
+
+	
 start:
 	mov ax, @data
 	mov ds, ax
 	mov es, ax
 	call SetGraphic
 
+	resetTimer timer1
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; IF PROGRAM IS BROKEN, MAKE SURE TO CALL SetGraphic!! ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-	; mov cx, 5
-	; @@loop:
-	; 	call getNewWord
-	; loop @@loop
+	
 	
 	call mainLoop
 
 EXIT:
-    
 	mov ax, 4C00h ; returns control to dos
   	int 21h
 
@@ -43,8 +42,11 @@ include "byUtils/byPages.asm"
 
 proc mainLoop
 	@@loop:
+		checkTimer timer1, 4, setDesiredPage
+		call VSync
 		cmp [stopScreen], 0
 		jne @@loop
+
 		call displayCurrentScreen
 	jmp @@loop
 
@@ -73,14 +75,14 @@ proc playGame
 		cmp [wordIndex], 6
 		jne @@continueLoop
 
-		mov [currentScreen], 3
-		push 5000
-		call sleep_ms
+		mov [currentScreen], 0
+		sleepMS 1000
+		mov [stopScreen], 0
 		jmp @@continueLoop
 
 		@@win:
-		mov [currentScreen], 1
-		mov [wordIndex], 1
+		mov [currentScreen], 6
+		mov [stopScreen], 0
 		jmp @@end
 
 		@@continueLoop:
@@ -124,7 +126,7 @@ proc getUserGuess
 	@@getLetter:
 		xor ax, ax
 
-		mov ah, 01h
+		mov ah, 08h
 		int 21h
 
 		; SOMETIMES SETS AL TO 41???
@@ -433,7 +435,7 @@ endp setBXToCurrentWordOffset
 ;========================================================
 ;========================================================
 
-proc basicScreenSetup
+proc basicGameScreenSetup
 	push cx
 
 	mov cx, 5
@@ -447,7 +449,7 @@ proc basicScreenSetup
 	pop cx
 
 	ret
-endp basicScreenSetup
+endp basicGameScreenSetup
 
 ;========================================================
 ;========================================================
@@ -492,8 +494,9 @@ endp checkWin
 
 proc setupGameScreen
 	call clearScreen
-	call basicScreenSetup
+	call basicGameScreenSetup
 	call generateRandomWord
+	mov [wordIndex], 1
 	mov [currentScreen], 1
 	ret
 endp setupGameScreen
@@ -508,8 +511,7 @@ END start
 
 
 
-
 ;-----------------------
 ; 		  TODO:
-; 1. adding screens
+; 1. adding lose screen!!
 ;-----------------------

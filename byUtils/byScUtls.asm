@@ -1,7 +1,6 @@
-
 proc clearScreen
 	call SetGraphic
-
+	
 	push dx
  
 	mov dx, offset BACKGROUND_IMAGE_PATH
@@ -152,8 +151,7 @@ proc displayWord
 		push cx
 		call displayLetterByColor
 
-		push DELAY
-		call sleep_ms
+		
 	loop @@loop
 
 	pop cx
@@ -169,17 +167,30 @@ endp displayWord
 ;========================================================
 
 proc displayCurrentScreen
-	cmp [currentScreen], 0
-	je @@menuScreen
-
-	cmp [currentScreen], 1
-	je @@gameScreen
-
-	cmp [currentScreen], 2
-	je @@loseScreen
+	; call clearScreen
 
 	cmp [currentScreen], 3
+	jle @@menuScreen
+
+	cmp [currentScreen], 4
+	je @@gameScreen
+
+	cmp [currentScreen], 5
+	je @@loseScreen
+
+	cmp [currentScreen], 6
 	je @@winScreen
+	
+	cmp [currentScreen], 7
+	je @@learnScreen
+
+	cmp [currentScreen], 8
+	je @@learnBackScreen
+
+	cmp [currentScreen], 9
+	je @@quitScreen
+
+	jmp @@end
 
 	@@menuScreen:
 	call menuScreen
@@ -197,7 +208,33 @@ proc displayCurrentScreen
 	call winScreen
 	jmp @@end
 
+	@@learnScreen:
+	call learnScreen
+	jmp @@end
+
+	@@learnBackScreen:
+	call learnBackScreen
+	jmp @@end
+
+	@@quitScreen:
+	call quitScreen
+	jmp @@end
+
 	@@end:
-	mov [stopScreen], 0
 	ret 
 endp displayCurrentScreen
+
+
+proc VSync
+	@@wait_sync:
+    mov dx,03DAh
+	@@wait_end:
+		in al,dx
+		test al,8
+		jnz @@wait_end
+	@@wait_start:
+		in al,dx
+		test al,8
+		jz @@wait_start
+		ret
+endp VSync

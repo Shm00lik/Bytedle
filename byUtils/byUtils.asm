@@ -41,11 +41,6 @@ proc sleep_ms
     ret 2
 endp sleep_ms
 
-macro sleepMS miliseconds
-    push miliseconds
-    call sleep_ms
-endm sleepMS
-
 ;========================================================
 ;========================================================
 ;========================================================
@@ -123,3 +118,271 @@ proc generateRandomWord
     call readRandomWord
     ret
 endp generateRandomWord
+
+;========================================================
+;========================================================
+;========================================================
+
+proc activateMouse
+	push ax
+    
+	mov ax, 0h
+	int 33h
+
+	mov ax, 1h
+	int 33h
+
+	pop ax
+	ret
+endp activateMouse
+
+;========================================================
+;========================================================
+;========================================================
+
+proc deactivateMouse
+	push ax
+
+	mov ax, 2h
+	int 33h
+
+	pop ax
+	ret
+endp deactivateMouse
+
+;========================================================
+;========================================================
+;========================================================
+
+proc saveCursorPosition
+    push cx
+    push dx
+
+    call checkMouseLocation
+    mov [offset lastCursorX], cx
+    mov [offset lastCursorY], dx
+
+    pop dx
+    pop cx
+    ret
+endp saveCursorPosition
+
+;========================================================
+;========================================================
+;========================================================
+
+proc setCursorPosition
+    push ax
+    push bx
+    push cx
+    push dx
+    
+    xor ax, ax
+
+    mov ah, 04h
+    mov cx, [offset lastCursorX]
+    mov dx, [offset lastCursorY]
+    int 33h
+
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp setCursorPosition
+
+;========================================================
+;========================================================
+;========================================================
+
+; CX, DX -> X, Y
+; BX -> buttons
+proc checkMouseLocation
+    push ax
+    mov ax, 3h
+    int 33h
+
+    shr cx, 1
+
+    pop ax
+    ret
+endp checkMouseLocation
+
+;========================================================
+;========================================================
+;========================================================
+
+proc setDesiredPage
+    push ax
+    push bx
+    push cx
+    push dx
+
+    cmp [currentScreen], 4
+    je @@exit
+
+    call checkMouseLocation
+
+    cmp [currentScreen], 4
+    jl @@menuButtons
+
+    cmp [currentScreen], 7
+    je @@learnButtons
+
+    cmp [currentScreen], 8
+    je @@learnButtons
+
+    jmp @@exit
+    
+    @@menuButtons:
+    call checkForMenuButtonHover
+    jmp @@end
+
+    @@learnButtons:
+    call checkForLearnButtonHover
+    jmp @@end
+    
+    @@end:
+    call handleMouseClick
+    cmp al, [currentScreen]
+    je @@exit
+
+
+    mov [currentScreen], al
+    mov [stopScreen], 0
+
+
+    @@exit:
+    pop dx
+    pop cx
+    pop bx
+    pop ax
+    ret
+endp setDesiredPage
+
+;========================================================
+;========================================================
+;========================================================
+
+proc checkForMenuButtonHover
+    cmp cx, 100
+    jl @@mainMenu
+
+    cmp cx, 219
+    jg @@mainMenu
+
+    cmp dx, 97
+    jl @@mainMenu
+
+    cmp dx, 120
+    jl @@playButton
+
+    cmp dx, 126
+    jl @@mainMenu
+
+    cmp dx, 149
+    jl @@learnButton
+
+    cmp dx, 155
+    jl @@mainMenu
+
+    cmp dx, 178
+    jl @@quitButton
+
+    jmp @@mainMenu
+
+    @@playButton:
+    mov ax, 1
+    jmp @@end
+
+    @@learnButton:
+    mov ax, 2
+    jmp @@end
+
+    @@quitButton:
+    mov ax, 3
+    jmp @@end
+
+    @@mainMenu:
+    mov ax, 0
+    jmp @@end
+    
+    @@end:
+    ret
+endp checkForMenuButtonHover
+
+;========================================================
+;========================================================
+;========================================================
+
+proc checkForLearnButtonHover
+    cmp cx, 4
+    jl @@learnScreen
+
+    cmp cx, 52
+    jg @@learnScreen
+
+    cmp dx, 175
+    jl @@learnScreen
+
+    cmp dx, 200
+    jl @@backButton
+
+    jmp @@learnScreen
+
+    @@backButton:
+    mov ax, 8
+    jmp @@end
+
+    @@learnScreen:
+    mov ax, 7
+    jmp @@end
+
+    @@end:
+    ret
+endp checkForLearnButtonHover
+
+;========================================================
+;========================================================
+;========================================================
+
+proc handleMouseClick
+    shr bx, 1
+    jnc @@exit
+    
+    cmp [currentScreen], 0
+    je @@exit
+
+    cmp [currentScreen], 1
+    je @@gameScreen
+
+    cmp [currentScreen], 2
+    je @@learnScreen
+
+    cmp [currentScreen], 3
+    je @@quitScreen
+
+    cmp [currentScreen], 8
+    je @@menuScreen
+
+    jmp @@exit
+
+    @@menuScreen:
+    mov ax, 0
+    jmp @@exit
+
+    @@gameScreen:
+    mov ax, 4
+    jmp @@exit
+
+    @@learnScreen:
+    mov ax, 7
+    jmp @@exit
+
+    @@quitScreen:
+    mov ax, 9
+    jmp @@exit
+
+    @@exit:
+    ret
+endp handleMouseClick
