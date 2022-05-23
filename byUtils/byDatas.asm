@@ -62,7 +62,7 @@ WIN_SCREEN        equ 6
 
 
 
-correctWord   db "aaaaa"
+correctWord   db "     "
 userGuess     db "     "
 colors        db "     "
 letterFound   db 0

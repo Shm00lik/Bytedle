@@ -123,11 +123,23 @@ endp generateRandomWord
 ;========================================================
 ;========================================================
 
+proc initiateMouse
+    push ax
+
+    mov ax, 0h
+	int 33h
+
+    pop ax
+endp initiateMouse
+
+;========================================================
+;========================================================
+;========================================================
+
 proc activateMouse
 	push ax
     
-	mov ax, 0h
-	int 33h
+	
 
 	mov ax, 1h
 	int 33h
@@ -178,10 +190,12 @@ proc setCursorPosition
     push dx
     
     xor ax, ax
-
+	xor cx, cx
+	xor dx, dx
+	
     mov ah, 04h
-    mov cx, [offset lastCursorX]
-    mov dx, [offset lastCursorY]
+    mov cl, [offset lastCursorX]
+    mov dl, [offset lastCursorY]
     int 33h
 
     pop dx

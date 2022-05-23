@@ -6,7 +6,11 @@
 
 proc OpenShowBmp near
 	push ax
+	push bx
 	push dx
+	push di
+	push si
+	push sp
 	
 	call OpenBmpFile
 	cmp [ErrorFile],1
@@ -24,7 +28,11 @@ proc OpenShowBmp near
 	call CloseBmpFile
 
 @@ExitProc:
+	pop sp
+	pop si
+	pop di
 	pop dx
+	pop bx
 	pop ax
 	ret
 endp OpenShowBmp

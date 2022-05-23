@@ -2,7 +2,7 @@ IDEAL
 
 MODEL small
 STACK 256
-
+; segment extra para public use16
 
 DATASEG
 	include "byUtils/byDatas.asm"
@@ -16,9 +16,9 @@ start:
 	mov ax, @data
 	mov ds, ax
 	mov es, ax
-	call SetGraphic
+	
+	initializations
 
-	resetTimer timer1
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; IF PROGRAM IS BROKEN, MAKE SURE TO CALL SetGraphic!! ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -75,8 +75,9 @@ proc playGame
 		cmp [wordIndex], 6
 		jne @@continueLoop
 
-		mov [currentScreen], 0
+		mov [currentScreen], 9
 		sleepMS 1000
+
 		mov [stopScreen], 0
 		jmp @@continueLoop
 
@@ -513,5 +514,5 @@ END start
 
 ;-----------------------
 ; 		  TODO:
-; 1. adding lose screen!!
+; 1. Submit the project
 ;-----------------------

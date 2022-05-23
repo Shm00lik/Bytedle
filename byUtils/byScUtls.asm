@@ -167,7 +167,7 @@ endp displayWord
 ;========================================================
 
 proc displayCurrentScreen
-	; call clearScreen
+	; call SetGraphic
 
 	cmp [currentScreen], 3
 	jle @@menuScreen
@@ -224,6 +224,9 @@ proc displayCurrentScreen
 	ret 
 endp displayCurrentScreen
 
+;========================================================
+;========================================================
+;========================================================
 
 proc VSync
 	@@wait_sync:

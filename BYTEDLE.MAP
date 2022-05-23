@@ -1,7 +1,7 @@
 
  Start  Stop   Length Name               Class
 
- 00000H 00885H 00886H _TEXT              CODE
+ 00000H 0088AH 0088BH _TEXT              CODE
  00890H 01047H 007B8H _DATA              DATA
  01050H 0114FH 00100H STACK              STACK
 

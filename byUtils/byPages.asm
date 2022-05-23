@@ -10,13 +10,13 @@ proc showScreen
     SCREEN_PATH_OFFSET equ [bp + 6]
     SHOW_MOUSE         equ [bp + 4]
 
-    call clearScreen
+    ; call clearScreen
 
     push bx
     push dx
     
     mov bx, SHOW_MOUSE
-    cmp [byte bx], 1
+    cmp bx, 00000001h
     je @@activateMouse
 
     jmp @@deactivateMouse
@@ -46,10 +46,12 @@ proc showScreen
     mov [stopScreen], 1
 
     pop bp
-	ret 2
+	ret 4
 endp showScreen
 
-
+;========================================================
+;========================================================
+;========================================================
 
 proc menuScreen
     push ax
@@ -62,7 +64,7 @@ proc menuScreen
     mov [bx], al
 
     push offset MENU_IMAGE
-    push 0
+    push 1
     call showScreen
 
     pop bx
@@ -70,6 +72,9 @@ proc menuScreen
     ret
 endp menuScreen
 
+;========================================================
+;========================================================
+;========================================================
 
 proc gameScreen
     deactivateMouseAndSavePosition
@@ -78,6 +83,9 @@ proc gameScreen
     ret
 endp gameScreen
 
+;========================================================
+;========================================================
+;========================================================
 
 proc loseScreen
     push offset MENU_IMAGE
@@ -86,6 +94,9 @@ proc loseScreen
     ret
 endp loseScreen
 
+;========================================================
+;========================================================
+;========================================================
 
 proc winScreen
     push offset WIN_IMAGE
@@ -96,6 +107,9 @@ proc winScreen
     ret
 endp winScreen
 
+;========================================================
+;========================================================
+;========================================================
 
 proc learnScreen
     push offset LEARN_IMAGE
@@ -104,6 +118,9 @@ proc learnScreen
     ret
 endp learnScreen
 
+;========================================================
+;========================================================
+;========================================================
 
 proc learnBackScreen
     push offset LEARN_BACK_IMAGE
@@ -112,6 +129,9 @@ proc learnBackScreen
     ret
 endp learnBackScreen
 
+;========================================================
+;========================================================
+;========================================================
 
 proc quitScreen
     push offset QUIT_IMAGE

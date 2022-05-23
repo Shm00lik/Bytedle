@@ -41,7 +41,7 @@ endm
 
 macro activateMouseToLastPosition
     call activateMouse
-    call setCursorPosition
+    ; call setCursorPosition
 endm
 
 ;========================================================
@@ -49,6 +49,17 @@ endm
 ;========================================================
 
 macro deactivateMouseAndSavePosition
-    call saveCursorPosition
+    ; call saveCursorPosition
     call deactivateMouse
+endm
+
+;========================================================
+;========================================================
+;========================================================
+
+macro initializations
+    call SetGraphic
+    call initiateMouse
+
+    resetTimer timer1
 endm
