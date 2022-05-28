@@ -95,6 +95,3 @@ stopScreen    db 0
 
 
 timer1 dw ?
-
-lastCursorX db 0
-lastCursorY db 0

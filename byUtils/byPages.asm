@@ -78,7 +78,7 @@ endp menuScreen
 ;========================================================
 
 proc gameScreen
-    deactivateMouseAndSavePosition
+    call deactivateMouse
     call setupGameScreen
     call playGame
     ret

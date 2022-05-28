@@ -125,6 +125,7 @@ endp readRandomWord
 
 proc generateRandomWord
     call createFlagFile
+    sleepMS 200
     call readRandomWord
     ret
 endp generateRandomWord
@@ -170,49 +171,6 @@ proc deactivateMouse
 	pop ax
 	ret
 endp deactivateMouse
-
-;========================================================
-;========================================================
-;========================================================
-
-proc saveCursorPosition
-    push cx
-    push dx
-
-    call checkMouseLocation
-    mov [offset lastCursorX], cx
-    mov [offset lastCursorY], dx
-
-    pop dx
-    pop cx
-    ret
-endp saveCursorPosition
-
-;========================================================
-;========================================================
-;========================================================
-
-proc setCursorPosition
-    push ax
-    push bx
-    push cx
-    push dx
-    
-    xor ax, ax
-	xor cx, cx
-	xor dx, dx
-	
-    mov ah, 04h
-    mov cl, [offset lastCursorX]
-    mov dl, [offset lastCursorY]
-    int 33h
-
-    pop dx
-    pop cx
-    pop bx
-    pop ax
-    ret
-endp setCursorPosition
 
 ;========================================================
 ;========================================================
