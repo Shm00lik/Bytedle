@@ -52,3 +52,14 @@ macro deactivateMouseAndSavePosition
     ; call saveCursorPosition
     call deactivateMouse
 endm
+
+;========================================================
+;========================================================
+;========================================================
+
+macro initialize
+    call SetGraphic
+    call initiateMouse
+
+    resetTimer timer1
+endm

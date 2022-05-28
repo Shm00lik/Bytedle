@@ -16,15 +16,8 @@ start:
 	mov ax, @data
 	mov ds, ax
 	mov es, ax
-	call SetGraphic
-	call initiateMouse
-	
-	resetTimer timer1
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	;; IF PROGRAM IS BROKEN, MAKE SURE TO CALL SetGraphic!! ;;
-	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-	
-	
+
+	initialize
 	call mainLoop
 
 EXIT:
