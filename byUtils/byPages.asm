@@ -11,10 +11,10 @@ proc showScreen
     SHOW_MOUSE         equ [bp + 4]
 
     ; call clearScreen
+	; deactivateMouseAndSavePosition
 
-    push bx
-    push dx
-    
+	push bx
+
     mov bx, SHOW_MOUSE
     cmp bx, 00000001h
     je @@activateMouse
@@ -22,16 +22,18 @@ proc showScreen
     jmp @@deactivateMouse
 
     @@activateMouse:
-    activateMouseToLastPosition
+    call activateMouse
     jmp @@continue
 
     @@deactivateMouse:
-    deactivateMouseAndSavePosition
-
+    call deactivateMouse
     jmp @@continue
 
     @@continue:
-
+    pop bx
+    
+    push dx
+    
 	mov dx, SCREEN_PATH_OFFSET
 	mov [BmpLeft], 0
 	mov [BmpTop], 0
@@ -40,8 +42,7 @@ proc showScreen
 	
 	call OpenShowBmp
 
-	pop dx
-    pop bx
+   	pop dx
 
     mov [stopScreen], 1
 
@@ -88,9 +89,23 @@ endp gameScreen
 ;========================================================
 
 proc loseScreen
-    push offset MENU_IMAGE
-    push 1
+    sleepMS 1000
+
+    push offset LOSS_IMAGE
+    push 0
     call showScreen
+	
+    
+    push DELAY_BETWEEN_LETTERS
+	push offset correctWordWithColors
+	push 3
+	call displayWord
+
+    sleepMS 5000
+
+    mov ax, 4C00h ; returns control to dos
+  	int 21h
+
     ret
 endp loseScreen
 
@@ -104,6 +119,9 @@ proc winScreen
     call showScreen
 
     sleepMS 3000
+    
+    mov ax, 4C00h ; returns control to dos
+  	int 21h
     ret
 endp winScreen
 

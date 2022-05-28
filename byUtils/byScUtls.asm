@@ -15,6 +15,9 @@ proc clearScreen
 	ret
 endp clearScreen
 
+;========================================================
+;========================================================
+;========================================================
 
 ; STACK:
 ; letter
@@ -56,6 +59,9 @@ proc displayLetterByColor
 	ret 8
 endp displayLetterByColor
 
+;========================================================
+;========================================================
+;========================================================
 
 ; STACK:
 ; word index
@@ -112,6 +118,9 @@ proc displayLetter
 	ret 4
 endp displayLetter
 
+;========================================================
+;========================================================
+;========================================================
 
 ; STACK:
 ; delay between letters
@@ -151,7 +160,7 @@ proc displayWord
 		push cx
 		call displayLetterByColor
 
-		
+		; sleepMS DELAY
 	loop @@loop
 
 	pop cx
@@ -167,7 +176,7 @@ endp displayWord
 ;========================================================
 
 proc displayCurrentScreen
-	; call SetGraphic
+	; call clearScreen
 
 	cmp [currentScreen], 3
 	jle @@menuScreen

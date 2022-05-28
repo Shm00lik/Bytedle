@@ -2,7 +2,7 @@ IDEAL
 
 MODEL small
 STACK 256
-; segment extra para public use16
+
 
 DATASEG
 	include "byUtils/byDatas.asm"
@@ -16,9 +16,10 @@ start:
 	mov ax, @data
 	mov ds, ax
 	mov es, ax
+	call SetGraphic
+	call initiateMouse
 	
-	initializations
-
+	resetTimer timer1
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 	;; IF PROGRAM IS BROKEN, MAKE SURE TO CALL SetGraphic!! ;;
 	;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -43,7 +44,7 @@ include "byUtils/byPages.asm"
 proc mainLoop
 	@@loop:
 		checkTimer timer1, 4, setDesiredPage
-		call VSync
+		; call VSync
 		cmp [stopScreen], 0
 		jne @@loop
 
@@ -65,19 +66,20 @@ proc playGame
 
 	mov cx, 5
 	@@loop:
+		; Getting new word from the user:
 		call getNewWord
 
+		; Checking for a win:
 		call checkWin
-
 		cmp [isWin], 1
 		je @@win
 
+		; If not a win, then checks for a loss:
 		cmp [wordIndex], 6
 		jne @@continueLoop
 
-		mov [currentScreen], 9
-		sleepMS 1000
-
+		; That means that the user lost:
+		mov [currentScreen], 5
 		mov [stopScreen], 0
 		jmp @@continueLoop
 
@@ -127,16 +129,19 @@ proc getUserGuess
 	@@getLetter:
 		xor ax, ax
 
+		; Getting the letter:
 		mov ah, 08h
 		int 21h
-
-		; SOMETIMES SETS AL TO 41???
+		
+		; If it's backspace:
 		cmp al, 8h
 		je @@backspace
 
+		; If it's enter:
 		cmp al, 0dh
 		je @@enter
 
+		; Any other letter:
 		cmp cx, 1
 		je @@getLetter
 
@@ -149,9 +154,11 @@ proc getUserGuess
 		jmp @@continue
 
 		@@backspace:
+			; Preventing backspace on first letter:
 			cmp cx, 6
-			je @@getLetter ; for prevent backspace on first letter
+			je @@getLetter
 
+			; Setting the letter to be NONE, represented by "_":
 			mov ax, "_"
 			push ax
 
@@ -492,13 +499,12 @@ endp checkWin
 ;========================================================
 ;========================================================
 
-
 proc setupGameScreen
 	call clearScreen
 	call basicGameScreenSetup
 	call generateRandomWord
 	mov [wordIndex], 1
-	mov [currentScreen], 1
+	mov [currentScreen], 4
 	ret
 endp setupGameScreen
 
@@ -514,5 +520,5 @@ END start
 
 ;-----------------------
 ; 		  TODO:
-; 1. Submit the project
+; 1. adding lose screen!!
 ;-----------------------

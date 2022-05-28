@@ -33,9 +33,11 @@ BmpRowSize dw ?
 BACKGROUND_IMAGE_PATH  db "byImages/byBack.bmp"          , 0
 MENU_IMAGE             db "byImages/screens/menu_0.bmp"  , 0
 QUIT_IMAGE             db "byImages/screens/quit.bmp"    , 0
+LOSS_IMAGE              db "byImages/screens/loss.bmp"     , 0
 LEARN_IMAGE            db "byImages/screens/learn.bmp"   , 0
 LEARN_BACK_IMAGE       db "byImages/screens/learnBck.bmp", 0
 WIN_IMAGE              db "byImages/screens/win.bmp"     , 0
+
 
 
 CURRENT_LETTER_PATH    db "byImages/letters/___.bmp"    , 0
@@ -62,18 +64,19 @@ WIN_SCREEN        equ 6
 
 
 
-correctWord   db "     "
-userGuess     db "     "
-colors        db "     "
-letterFound   db 0
-isWin         db 0
-wordIndex     db 1
-defaultWord   db "__________"
-wordHistory1  db "     wwwww"
-wordHistory2  db "     wwwww"
-wordHistory3  db "     wwwww"
-wordHistory4  db "     wwwww"
-wordHistory5  db "     wwwww"
+correctWord           db "     "
+userGuess             db "     "
+colors                db "     "
+letterFound           db 0
+isWin                 db 0
+wordIndex             db 1
+defaultWord           db "__________"
+correctWordWithColors db "     ggggg"
+wordHistory1          db "     wwwww"
+wordHistory2          db "     wwwww"
+wordHistory3          db "     wwwww"
+wordHistory4          db "     wwwww"
+wordHistory5          db "     wwwww"
 
 currentScreen db 0
 

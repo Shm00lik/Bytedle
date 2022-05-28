@@ -96,6 +96,16 @@ proc readRandomWord
     mov dx, offset correctWord
     int 21h
 
+    mov si, offset correctWord
+    mov bx, offset correctWordWithColors
+    mov cx, 5
+    @@loopWord:
+		mov al, [si]
+		mov [bx], al
+		inc bx
+		inc si
+	loop @@loopWord
+    
     ; Closing the file:
     xor ax, ax
     mov ah, 3eh
@@ -124,12 +134,13 @@ endp generateRandomWord
 ;========================================================
 
 proc initiateMouse
-    push ax
-
-    mov ax, 0h
+	push ax
+    
+	mov ax, 0h
 	int 33h
-
-    pop ax
+	
+	pop ax
+	ret
 endp initiateMouse
 
 ;========================================================
@@ -138,8 +149,6 @@ endp initiateMouse
 
 proc activateMouse
 	push ax
-    
-	
 
 	mov ax, 1h
 	int 33h
